@@ -52,7 +52,8 @@ To generate an 'estimate' of your DataMapper objects based upon your SalesForce 
 
 This will generate a file : tmp/sales_force_import/dm_mapped_objects.rb for you to review and then override the plugin however you see fit.
 I strongly advise looking through the import process in salesforce.rb to ensure the right columns and data is mapped correctly. In many cases you will
-need to retro-fit FFCRM to include additional fields and add the mapping to the import.
+need to retro-fit FFCRM to include additional fields and add the mapping to the import. 
+  Note - Overwrite the lib/data_mapper/dm_mapped_objects.rb file - I haven't cleaned it to a generic SalesForce mapped objects set yet.
 
 To import Salesforce information into Fat Free CRM. Run the following command:
 
@@ -79,7 +80,8 @@ To import SalesForce information into Fat Free CRM. Run the following commands:
   - Use mapped columns hash and loop accordingly instead of using seperate method for each major object
   - Handle more salesforce objects
   - Work out better way to insert comments/notes without having to monkey patch the after_create filter
-  - Extend notes --> comments for searching additional objects (import_notes, salesforce.rb)
+  - Extend notes --> comments for searching additional objects (import_notes, salesforce.rb) 
+  - Strip dm_mapped_objects.rb to a generic copy of salesforce with no custom fields
   
 === Credits
 
