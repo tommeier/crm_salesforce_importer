@@ -40,7 +40,7 @@ Update CRM fields to ensure the field size are the correct sizes. Some examples:
 The plugin installs just like any Ruby on Rails plugin packaged as git.
 Assuming that you have Fat Free CRM up and running:
 
-  $ ./script/install plugin git://github.com/tommeier/crm_importer.git
+  $ ./script/install plugin git://github.com/tommeier/crm_salesforce_importer.git
 
 The sample plugin will be installed in vendor/plugins/crm_importer directory.
 
