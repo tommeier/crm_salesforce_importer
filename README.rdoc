@@ -42,7 +42,7 @@ Assuming that you have Fat Free CRM up and running:
 
   $ ./script/install plugin git://github.com/tommeier/crm_salesforce_importer.git
 
-The sample plugin will be installed in vendor/plugins/crm_importer directory.
+The plugin will be installed in vendor/plugins/crm_salesforce_importer directory.
 
 === How To
 
