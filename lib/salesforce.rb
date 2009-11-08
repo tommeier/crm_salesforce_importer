@@ -25,6 +25,7 @@ module Salesforce
     #Raise connection if not initialized already   
     conn = DataMapper::DmConnection.new unless DataMapper::DmConnection.connection.present?
     
+    #TODO : pass variable to clear tables first
     #User.delete_all!
     #Account.delete_all!
     #Contact.delete_all!
@@ -123,15 +124,7 @@ module Salesforce
     # :company_name,                      String
     # :phone,                             String
     # :mobile_phone,                      String  
-    # :is_active,                         Boolean --> suspended_at
-    
-    #Custom User columns required 
-    # :fax,                               String               
-    # :street,                            String 
-    # :city,                              String                                                                                                                        
-    # :postal_code,                       String                                                                        
-    # :state,                             String                                                     
-    # :country                            String                                                    
+    # :is_active,                         Boolean --> suspended_at                                                  
     
     #---------------------------------------------------------------------------
     
@@ -162,14 +155,14 @@ module Salesforce
          :suspended_at => suspended_date 
        }
        
-       address_details = %w( street city state postal_code country )
-       address = address_details.collect{|i| u.send(i) }.compact.join(', ')
-
-       custom_values = {
-         :fax => u.fax,
-         :address => address           
-       }
-       update_values.update(custom_values)
+       # address_details = %w( street city state postal_code country )
+       # address = address_details.collect{|i| u.send(i) }.compact.join(', ')
+       #     
+       # custom_values = {
+       #   :fax => u.fax,
+       #   :address => address           
+       # }
+       # update_values.update(custom_values)
        
        #Avoid mass assignment protection
        update_values.each do |k,v|
@@ -237,19 +230,6 @@ module Salesforce
     #  "created_at",
     #  "updated_at"
     
-    #custom Account columns required
-    # :description
-    # :abn__c,                                                                                                               
-    # :acn__c,                                                                                          
-    # :bhc_used_for_grower_delivery__c,                                                                               
-    # :grn_number__c,                                                       
-    # :grn_type__c,                                                               
-    # :registration_type__c,                                                      
-    # :relationship_to_clear__c,                                  
-    # :rough_guide_to_grain_volume_mt__c,                                  
-    # :what_grains_do_you_trade_in__c,
-    
-    
     account_counter = 0
      #Generate Accounts
     DataMapper::Objects::Account.all.each do |a| 
@@ -259,7 +239,6 @@ module Salesforce
         shipping_address = address_details.collect{|i| "shipping_#{i}"}.collect{|i| a.send(i) }.compact.join(', ')
         billing_address  = address_details.collect{|i| "billing_#{i}"}.collect{|i| a.send(i) }.compact.join(', ') 
         
-        #( shipping_address + billing_address ).each { |i| crm_account[i] = a.send(i) }
         sf_user = DataMapper::Objects::User.get(a.owner_id)
         crm_user = User.find_with_deleted(:first, :conditions => {:username => sf_user.username}) 
         raise "Error - Unable to find user for account - #{a.inspect}.\nPlease ensure the full usernames were saved in User model.\nIt could need the field size increased (if the user object saved)." if crm_user.blank? #Users should have been loaded and *should* be there
@@ -282,15 +261,15 @@ module Salesforce
            :shipping_address => shipping_address,
            :deleted_at => deleted_at
          } 
-         custom_values = {
-           :description => a.description,
-           :abn => a.abn__c,                               
-           :acn => a.acn__c,                                                       
-           :registration_type => a.registration_type__c,                  
-           :relationship_to_clear => a.relationship_to_clear__c,              
-           :rough_guide_to_grain_volume_mt => a.rough_guide_to_grain_volume_mt__c,     
-           :what_grains_do_you_trade_in => a.what_grains_do_you_trade_in__c         
-         }
+         # custom_values = {
+         #           :description => a.description,
+         #           :abn => a.abn__c,                               
+         #           :acn => a.acn__c,                                                       
+         #           :registration_type => a.registration_type__c,                  
+         #           :relationship_to_clear => a.relationship_to_clear__c,              
+         #           :rough_guide_to_grain_volume_mt => a.rough_guide_to_grain_volume_mt__c,     
+         #           :what_grains_do_you_trade_in => a.what_grains_do_you_trade_in__c         
+         #         } 
          update_values.update(custom_values) 
          
         #Avoid mass assignment protection
@@ -511,10 +490,10 @@ module Salesforce
            :deleted_at => deleted_at
          }
          
-         custom_values = {
-           :description => o.description
-         }
-         update_values.update(custom_values) 
+         # custom_values = {
+         #   :description => o.description
+         # }
+         # update_values.update(custom_values)   
 
         #Avoid mass assignment protection
         update_values.each do |k,v|
@@ -604,28 +583,6 @@ module Salesforce
      # "deleted_at",
      # "created_at",
      # "updated_at" 
-    
-     #Lead Custom fields:
-     #description
-     #website
-     #     mobile__c 
-     #     abn__c
-     #     acn__c
-     #     bhc_used_for_grower_delivery__c 
-     # mobile__c                                                      
-     # abn__c
-     # acn__c
-     # bhc_used_for_grower_delivery__c
-     # fax__c
-     # grn_number__c
-     # grn_type__c
-     # growers_broker__c  => growers_broker (Account)
-     # if_growers_broker_is_not_clear_user__c 
-     # registration_type__c => ["Grower", "Buyer", "Other", "Broker"]
-     # rough_guide_to_grain_volume_mt__c
-     # what_grains_do_you_trade_in__c
-     # feedback__c
-     
      
     leads_counter = 0
      unable = []   
@@ -676,22 +633,22 @@ module Salesforce
            :deleted_at => deleted_at
          }
           
-         custom_values = {
-           :description => l.description,
-           :abn => l.abn__c,                               
-           :acn => l.acn__c,                               
-           :bhc_used_for_grower_delivery => l.bhc_used_for_grower_delivery__c,
-           :fax => l.fax__c, 
-           :grn_number => l.grn_number__c,                         
-           :grn_type => l.grn_type__c,
-           :growers_broker_id => crm_broker_id, 
-           :if_growers_broker_is_not_clear_user => l.if_growers_broker_is_not_clear_user__c,
-           :registration_type => l.registration_type__c,                             
-           :rough_guide_to_grain_volume_mt => l.rough_guide_to_grain_volume_mt__c,     
-           :what_grains_do_you_trade_in => l.what_grains_do_you_trade_in__c,
-           :feedback => l.feedback__c         
-         }                                                                   
-         update_values.update(custom_values) 
+         # custom_values = {
+         #   :description => l.description,
+         #   :abn => l.abn__c,                               
+         #   :acn => l.acn__c,                               
+         #   :bhc_used_for_grower_delivery => l.bhc_used_for_grower_delivery__c,
+         #   :fax => l.fax__c, 
+         #   :grn_number => l.grn_number__c,                         
+         #   :grn_type => l.grn_type__c,
+         #   :growers_broker_id => crm_broker_id, 
+         #   :if_growers_broker_is_not_clear_user => l.if_growers_broker_is_not_clear_user__c,
+         #   :registration_type => l.registration_type__c,                             
+         #   :rough_guide_to_grain_volume_mt => l.rough_guide_to_grain_volume_mt__c,     
+         #   :what_grains_do_you_trade_in => l.what_grains_do_you_trade_in__c,
+         #   :feedback => l.feedback__c         
+         # }                                                                   
+         # update_values.update(custom_values) 
          
         #Avoid mass assignment protection
         update_values.each do |k,v|
@@ -744,9 +701,6 @@ module Salesforce
      #  "deleted_at",
      #  "created_at",
      #  "updated_at"
-
-     #Custom fields required 
-     #  description
      
      task_counter = 0
      unable = []
@@ -804,10 +758,10 @@ module Salesforce
                   :created_at => t.activity_date,
                   :updated_at => t.activity_date
                 }
-                custom_values = {
-                  :description => t.description,      
-                }                                                                   
-                update_values.update(custom_values) 
+                # custom_values = {
+                #   :description => t.description,      
+                # }                                                                   
+                # update_values.update(custom_values)   
                
                #Avoid mass assignment protection
                update_values.each do |k,v|
@@ -996,16 +950,6 @@ module Salesforce
     
     #Salesforce Objects
     #To view list of objects run Salesforce.list_total_content with a fully loaded dm_mapped_objects.rb file
-    
-    #These are just objects required for me to map in this import. Enhance and add for more objects:
-    #    LeadStatus - Total items : 9 
-    #    Account - Total items : 150  
-    #    Lead - Total items : 1000
-    #    User - User 
-    #    Task - Total items : 1000 (Find objects to associate manually)
-    #    TaskStatus - Total items : 5
-    #    EmailTemplate - Total items : 109 
-    #    Note - Total items : 119 (Find objects via association manually) 
       
     @objects_map = {  DataMapper::Objects::User => User,
                       DataMapper::Objects::Account => Account,
