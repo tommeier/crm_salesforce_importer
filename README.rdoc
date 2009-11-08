@@ -1,0 +1,98 @@
+=== Importer Plugin for Fat Free CRM
+
+This plugin is a simple way to import data from mapped sources. Initially just for SalesForce -> Fat Free CRM 
+For more information about Fat Free CRM visit http://github.com/michaeldv/fat_free_crm/tree/master
+
+=== Prerequisites
+
+To obtain the correct info from salesforce:
+
+    * Go to https://login.salesforce.com, and login.
+    * Grab the following from Salesforce's web UI
+          o Ensure your user has API access
+          o Your Enterprise API WSDL - Click "Setup", "Develop" >> "API" >> "Generate Enterprise WSDL"
+          o Your API Token Reset if needed - "Setup", "My Personal Info" >> "Reset My Security Token"
+    * Copy the WSDL file you downloaded to config/wsdl.xml
+    
+This version of the importer utilises DataMapper and the associated plugins.
+Please ensure the correct gems are installed and add this to your config/environment.rb : 
+	  * config.gem "dm-core", :version => '=0.9.11'
+	  * config.gem "dm-salesforce", :version => '=0.9.12'
+	
+Add the following files (used for defining salesforce connection and objects used for import):
+	config/salesforce/salesforce.yml
+	config/salesforce/wsdl.xml
+	
+Setup your salesforce.yml file in the following way with your details :
+
+    salesforce:
+      username: your_user@domain.com
+      password: your_password
+      security_token: full_security_token
+
+
+Update CRM fields to ensure the field size are the correct sizes. Some examples:
+  User.username #FFCRM is only 32, suggest a change to at least 64
+
+	
+=== Installation
+
+The plugin installs just like any Ruby on Rails plugin packaged as git.
+Assuming that you have Fat Free CRM up and running:
+
+  $ ./script/install plugin git://github.com/tommeier/crm_importer.git
+
+The sample plugin will be installed in vendor/plugins/crm_importer directory.
+
+=== How To
+
+To generate an 'estimate' of your DataMapper objects based upon your SalesForce setup (including custom columns), run the following:
+
+  * Salesforce::WsdlProperties.generate
+
+This will generate a file : tmp/sales_force_import/dm_mapped_objects.rb for you to review and then override the plugin however you see fit.
+I strongly advise looking through the import process in salesforce.rb to ensure the right columns and data is mapped correctly. In many cases you will
+need to retro-fit FFCRM to include additional fields and add the mapping to the import.
+
+To import Salesforce information into Fat Free CRM. Run the following command:
+
+  * Salesforce.import
+
+or from rake:
+
+  * rake fatfree:importer:import_salesforce
+
+== Miscellaneous commands
+
+- Create connection:
+  * Salesforce::DmConnection.new
+
+- Access Objects:
+  * DataMapper::Objects::Account.first
+
+To import SalesForce information into Fat Free CRM. Run the following commands:
+
+=== TODO
+  - Update the properties generator to correctly use belongs_to and has_many relationships. (Awaiting dm-salesforce to be updated to datamapper 10.*)
+  - Extensive tests across the importer
+  - Allow passed custom columns (currently manually changing the properties)
+  - Use mapped columns hash and loop accordingly instead of using seperate method for each major object
+  - Handle more salesforce objects
+  - Work out better way to insert comments/notes without having to monkey patch the after_create filter
+  - Extend notes --> comments for searching additional objects (import_notes, salesforce.rb)
+  
+=== Credits
+
+Fat Free CRM - http://github.com/michaeldv/fat_free_crm/tree/master
+Datamapper Core - http://github.com/datamapper/dm-core/
+Datamapper Salesforce - http://github.com/halorgium/dm-salesforce/
+=======
+Salesforce::WsdlProperties.generate
+This will generate a file : tmp/sales_force_import/dm_mapped_objects.rb for you to review and then override the plugin.
+
+To import SalesForce information into Fat Free CRM. Run the following commands:
+- Create connection:
+Salesforce::DmConnection.new
+
+- Access Objects:
+Salesforce::Objects::Account.first
