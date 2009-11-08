@@ -26,15 +26,15 @@ module Salesforce
     conn = DataMapper::DmConnection.new unless DataMapper::DmConnection.connection.present?
     
     #User.delete_all!
-    Account.delete_all!
-    Contact.delete_all!
-    Opportunity.delete_all!
-    AccountOpportunity.delete_all
-    AccountContact.delete_all
-    Lead.delete_all!
-    
-    Task.delete_all!
-    Comment.delete_all
+    #Account.delete_all!
+    #Contact.delete_all!
+    #Opportunity.delete_all!
+    #AccountOpportunity.delete_all
+    #AccountContact.delete_all
+    #Lead.delete_all!
+    #
+    #Task.delete_all!
+    #Comment.delete_all   
     
     import_users
     import_accounts

@@ -74,8 +74,8 @@ To import SalesForce information into Fat Free CRM. Run the following commands:
 
 === TODO
   - Update the properties generator to correctly use belongs_to and has_many relationships. (Awaiting dm-salesforce to be updated to datamapper 10.*)
-  - Extensive tests across the importer
-  - Allow passed custom columns (currently manually changing the properties)
+  - Extensive tests across the importer (use FakeWeb when I have access to an example SOAP salesforce response)
+  - Allow passed custom columns (currently manually changing the properties in the methods)
   - Use mapped columns hash and loop accordingly instead of using seperate method for each major object
   - Handle more salesforce objects
   - Work out better way to insert comments/notes without having to monkey patch the after_create filter
@@ -86,13 +86,3 @@ To import SalesForce information into Fat Free CRM. Run the following commands:
 Fat Free CRM - http://github.com/michaeldv/fat_free_crm/tree/master
 Datamapper Core - http://github.com/datamapper/dm-core/
 Datamapper Salesforce - http://github.com/halorgium/dm-salesforce/
-=======
-Salesforce::WsdlProperties.generate
-This will generate a file : tmp/sales_force_import/dm_mapped_objects.rb for you to review and then override the plugin.
-
-To import SalesForce information into Fat Free CRM. Run the following commands:
-- Create connection:
-Salesforce::DmConnection.new
-
-- Access Objects:
-Salesforce::Objects::Account.first
